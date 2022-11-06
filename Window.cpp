@@ -20,6 +20,13 @@ const char *fragmentShaderSource = "#version 330 core\n"
 	"{\n"
 	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 	"}\n\0";
+// fragment shader code 2
+const char *fragmentShaderSource2 = "#version 330 core\n"
+	"out vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+	"   FragColor = vec4(1.0f, 0.97f, 0.0f, 1.0f);\n"
+	"}\n\0";
 
 
 
@@ -82,12 +89,33 @@ int main() {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infolog);
 		std::cout << "ERROR compiling Fragment shader\n" << infolog << std::endl;
 	}
+
+	//build and compile 2nd fragment shader
+	GLuint fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader2, 1, &fragmentShaderSource2, NULL);
+	glCompileShader(fragmentShader2);
+
+	// check for error
+	glGetShaderiv(fragmentShader2, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(fragmentShader2, 512, NULL, infolog);
+		std::cout << "ERROR compiling Fragment shader2\n" << infolog << std::endl;
+	}
+
 	
 	// link shader
 	GLuint shaderprogram = glCreateProgram();
+	GLuint shaderprogram2 = glCreateProgram();
+	
+	//link shader orrange
 	glAttachShader(shaderprogram, vertexShader);
 	glAttachShader(shaderprogram, fragmentShader);
 	glLinkProgram(shaderprogram);
+
+	//linkn shader 2 or yellow
+	glAttachShader(shaderprogram2, vertexShader);
+	glAttachShader(shaderprogram2, fragmentShader2);
+	glLinkProgram(shaderprogram2);
 	
 	// link error
 	glGetProgramiv(shaderprogram, GL_LINK_STATUS, &success);
@@ -97,9 +125,19 @@ int main() {
 		std::cout << "ERROR linking shader\n" << infolog << std::endl;
 
 	}
+	// link error for shader 2
+	glGetProgramiv(shaderprogram2, GL_LINK_STATUS, &success);
+	if (!success)	
+	{
+		glGetProgramInfoLog(shaderprogram, 512, NULL, infolog);
+		std::cout << "ERROR linking shader 2\n" << infolog << std::endl;
+
+	}
+
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	glDeleteShader(fragmentShader2);
 
 	// set up vertex data 9 and buffers and configure vertex attributes
 	
@@ -170,11 +208,16 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		// draw triangle
+
+		// use first shader to draw first triangle 
 		glUseProgram(shaderprogram);
 
-		// first triangle
+			// first triangle
 		glBindVertexArray(VAO[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// use second shader to draw to second triangle
+		glUseProgram(shaderprogram2);
 		// second triangle
 		glBindVertexArray(VAO[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
