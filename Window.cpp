@@ -103,11 +103,15 @@ int main() {
 
 	// set up vertex data 9 and buffers and configure vertex attributes
 	
-	GLfloat vertices[] =
+	GLfloat triangel1[] =
 	{
 		-0.9f, -0.5f, 0.0f,  // left 
 		-0.0f, -0.5f, 0.0f,  // right
-		-0.45f, 0.5f, 0.0f,  // top 
+		-0.45f, 0.5f, 0.0f  // top
+	};
+
+	GLfloat triangel2[] = 
+	{
 		// second triangle
 		 0.0f, -0.5f, 0.0f,  // left
 		 0.9f, -0.5f, 0.0f,  // right
@@ -115,28 +119,43 @@ int main() {
 	};
 
 	// creating buffer objects
-	GLuint VAO;
-	GLuint VBO;
+	GLuint VAO[2];
+	GLuint VBO[2];
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenVertexArrays(2, VAO);
+	glGenBuffers(2, VBO);
 	// bind the vertex array first, then bind and set vertex buffer(s),
 	// and then configure vertex atrributes
-	glBindVertexArray(VAO);
+	// 
+	// 
+	//First triangle setup
+	glBindVertexArray(VAO[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangel1), triangel1, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
+
+
+	//Second Triangle setup
+	glBindVertexArray(VAO[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangel2), triangel2, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);  // because the vertex data is tightly packed we can 
+																   // also specify 0 as the vertex attribute's stride to let OpenGL figure it out
+	glEnableVertexAttribArray(0);
+	
+
+
 
 	// the call to glVertexAttribPointer registered vbo as the vertex attribute's bound vertex buffer object
 	// so afterward we can safely unbind 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);  // no need to bind as in the second triangle we set it directly
 	
 	// the VAO can be unbounded afterwards so other VAO calls won't accidentally modifty this
 	// VAO. Modifying other VAOs require a call to goBindVertexArray.
-	glBindVertexArray(0);
+	// glBindVertexArray(0);
 
 
 
@@ -152,8 +171,14 @@ int main() {
 		
 		// draw triangle
 		glUseProgram(shaderprogram);
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		// first triangle
+		glBindVertexArray(VAO[0]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// second triangle
+		glBindVertexArray(VAO[1]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 
 
 
@@ -168,8 +193,8 @@ int main() {
 
 
 	// de allocate all resources once they are no longer necessery
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(2, VAO);
+	glDeleteBuffers(2, VBO);
 	glDeleteProgram(shaderprogram);
 
 	// terminate glfw and clear all allocated resources
