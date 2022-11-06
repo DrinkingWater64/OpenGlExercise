@@ -107,11 +107,7 @@ int main() {
 	{
 		-0.9f, -0.5f, 0.0f,  // left 
 		-0.0f, -0.5f, 0.0f,  // right
-		-0.45f, 0.5f, 0.0f,  // top 
-		// second triangle
-		 0.0f, -0.5f, 0.0f,  // left
-		 0.9f, -0.5f, 0.0f,  // right
-		 0.45f, 0.5f, 0.0f   // top 
+		-0.45f, 0.5f, 0.0f  // top 
 	};
 
 	// creating buffer objects
@@ -153,7 +149,7 @@ int main() {
 		// draw triangle
 		glUseProgram(shaderprogram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 
 
